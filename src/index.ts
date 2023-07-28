@@ -22,7 +22,7 @@ app.use((error: any, req: Request, res: Response, next: NextFunction) => {
         type: 'error',
         response: error
     });
-})
+});
 
 app.listen(PORT, HOST, () => console.log(`Server running on port ${PORT}`));
 
