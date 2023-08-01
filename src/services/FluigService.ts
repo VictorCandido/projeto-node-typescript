@@ -1,69 +1,31 @@
 import 'dotenv/config'
-import axios from 'axios';
-import OAuth, { RequestOptions } from 'oauth-1.0a';
-import crypto from 'crypto';
+import { AxiosError } from 'axios';
+import ResponseErrorModel, { ErrorTypesEnum } from '../models/ResponseErrorModel';
+import AxiosService from './AxiosService';
 
 export default class FluigService {
-    private getAuthHeaderForRequest(request: RequestOptions) {
-        const CONSUMER_KEY: string = String(process.env.CONSUMER_KEY);
-        const CONSUMER_SECRET: string = String(process.env.CONSUMER_SECRET);
-        const ACCESS_TOKEN: string = String(process.env.ACCESS_TOKEN);
-        const TOKEN_SECRET: string = String(process.env.TOKEN_SECRET);
-
-        const oauth = new OAuth({
-            consumer: { 
-                key: CONSUMER_KEY, 
-                secret: CONSUMER_SECRET 
-            },
-            signature_method: 'HMAC-SHA1',
-            hash_function(base_string: string, key: string) {
-                return crypto
-                    .createHmac('sha1', key)
-                    .update(base_string)
-                    .digest('base64')
-            }
-        })
-
-        const authorization = oauth.authorize(request, {
-            key: ACCESS_TOKEN,
-            secret: TOKEN_SECRET,
-        });
-
-        return oauth.toHeader(authorization);
-    }
-
-    async startProcess() {
+    async startProcess(): Promise<number> {
         try {
-            const request = {
-                url: `${process.env.SERVER_URL}/process-management/api/v2/processes/${process.env.PROCESS_ID}/start`,
-                method: 'POST',
-                body: JSON.stringify({
-                    "targetAssignee": "victor.candido"
-                })
-            };
+            const url = `${process.env.SERVER_URL}/process-management/api/v2/processes/${process.env.PROCESS_ID}/start`;
+            const data = JSON.stringify({ "targetAssignee": "victor.candido" });
             
-            const authHeader = this.getAuthHeaderForRequest(request);
+            const axiosService = new AxiosService();
 
-            const options = { 
-                headers: {
-                    ...authHeader,
-                    'Content-Type': 'application/json',
-                }
+            const response = await axiosService.sendFluigRequest(url, data);
+
+            console.log('#### RESPONSE STATUS', response.status);
+            console.log('#### RESPONSE DATA', response.data);
+
+            if (response.status === 200) {
+                const { processInstanceId } = response.data;
+
+                return processInstanceId;
+            } else {
+                throw new ResponseErrorModel(ErrorTypesEnum.NOT_AVALIBLE, 'Falha ao iniciar solicitação no Fluig', response.status, response.data);
             }
-            
-            const response = await axios.post(
-                request.url,
-                request.body,
-                options
-            );
-    
-    
-            console.log('#### RESPONSE', response);
-        } catch (error) {
+        } catch (error: AxiosError | any) {
             console.error('[ERROR] - FluigService - startProcess - Falha ao iniciar solicitação - ', error);
             throw error;
         }
-
-        return process.env.SERVER_URL;
     }
 }

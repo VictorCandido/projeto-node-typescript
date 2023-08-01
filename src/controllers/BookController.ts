@@ -3,6 +3,7 @@ import BookModel from "../models/BookModel";
 import BookService from "../services/BookService";
 import UserService from "../services/UserService";
 import ResponseSuccessModel from "../models/ResponseSuccessModel";
+import FluigService from "../services/FluigService";
 
 class BookController {
     
@@ -31,19 +32,22 @@ class BookController {
     /**
      * Faz a reserva do livro no CPF da pessoa que deseja alugar
      */
-    rent(req: Request, res: Response, next: NextFunction): void {
+    async rent(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const { cpf, uuid } = req.body;
 
             const userService = new UserService();
             const bookService = new BookService();
+            const fluigService = new FluigService();
     
             const user = userService.find(cpf);
             const book = bookService.find(uuid);
             
             book.rentBook(user);
 
-            const response = new ResponseSuccessModel(200, 'OK');
+            const processInstanceId = await fluigService.startProcess();
+
+            const response = new ResponseSuccessModel(200, 'OK', processInstanceId);
             res.status(response.code).send(response); 
         } catch (error) {
             console.error('[ERROR] - BookController - rent - Falha ao alugar livro - ', error);

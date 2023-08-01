@@ -1,0 +1,18 @@
+version: '3.1'
+services:
+  database:
+    image: mysql:latest
+    container_name: database
+    restart: always
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_DATABASE: 'bd_biblioteca'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'victor.candido'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'root'
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: 'root'
+    volumes:
+      - ./my-db:/var/lib/mysql

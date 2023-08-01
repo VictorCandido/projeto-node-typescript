@@ -47,6 +47,7 @@ describe('Rent a book', () => {
 
         expect(response.status).toBe(200);
         expect(response.body._status).toBe('OK');
+        expect(response.body._data).toBeTruthy();
     });
 
     it('should not be able to rent a book', async () => {
