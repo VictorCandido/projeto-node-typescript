@@ -4,10 +4,23 @@ import request from 'supertest';
 import app from "..";
 
 describe('Check if the book is avalible or not', () => {
+    let token = '';
+    
+    beforeAll(async () => {
+        const response = await request(app)
+            .post(`/api/auth/login`)
+            .auth('usuario', 'senha123')
+            .send();
+
+        token = response.body.token;
+    });
+
     it('should be avalible', async () => {
         const uuid = '908cd771-f8fe-41d0-ad43-79b27accbccf';
 
-        const response = await request(app).get(`/api/biblioteca/verificardisponibilidade/${uuid}`);
+        const response = await request(app)
+            .get(`/api/biblioteca/verificardisponibilidade/${uuid}`)
+            .set('Authorization', `Bearer ${token}`);
 
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('_code');
@@ -17,7 +30,9 @@ describe('Check if the book is avalible or not', () => {
     it('should not to be avalible', async () => {
         const uuid = '4c2923a9-ab32-40bf-86ad-ce095a33e135';
 
-        const response = await request(app).get(`/api/biblioteca/verificardisponibilidade/${uuid}`);
+        const response = await request(app)
+            .get(`/api/biblioteca/verificardisponibilidade/${uuid}`)
+            .set('Authorization', `Bearer ${token}`);
 
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('_code');
@@ -27,7 +42,9 @@ describe('Check if the book is avalible or not', () => {
     it('should not be able to find the book', async () => {
         const uuid = 'sem id';
 
-        const response = await request(app).get(`/api/biblioteca/verificardisponibilidade/${uuid}`);
+        const response = await request(app)
+        .get(`/api/biblioteca/verificardisponibilidade/${uuid}`)
+        .set('Authorization', `Bearer ${token}`);
 
         expect(response.status).toBe(404);
         expect(response.body).toHaveProperty('type');
@@ -38,12 +55,26 @@ describe('Check if the book is avalible or not', () => {
 });
 
 describe('Rent a book', () => {
+    let token = '';
+    
+    beforeAll(async () => {
+        const response = await request(app)
+            .post(`/api/auth/login`)
+            .auth('usuario', 'senha123')
+            .send();
+
+        token = response.body.token;
+    });
+
     it('should be able to rent a book', async () => {
         const requestData = {
             cpf: '609.037.520-93',
             uuid: '908cd771-f8fe-41d0-ad43-79b27accbccf'
         }
-        const response = await request(app).post('/api/biblioteca/alugarlivro').send(requestData);
+        const response = await request(app)
+            .post('/api/biblioteca/alugarlivro')
+            .set('Authorization', `Bearer ${token}`)
+            .send(requestData);
 
         expect(response.status).toBe(200);
         expect(response.body._status).toBe('OK');
@@ -55,7 +86,10 @@ describe('Rent a book', () => {
             cpf: '609.037.520-93',
             uuid: '4c2923a9-ab32-40bf-86ad-ce095a33e135'
         }
-        const response = await request(app).post('/api/biblioteca/alugarlivro').send(requestData);
+        const response = await request(app)
+            .post('/api/biblioteca/alugarlivro')
+            .set('Authorization', `Bearer ${token}`)
+            .send(requestData);
 
         expect(response.status).toBe(500);
         expect(response.body).toHaveProperty('type');
@@ -69,7 +103,10 @@ describe('Rent a book', () => {
             cpf: '609.037.520-93',
             uuid: 'sem id'
         }
-        const response = await request(app).post('/api/biblioteca/alugarlivro').send(requestData);
+        const response = await request(app)
+            .post('/api/biblioteca/alugarlivro')
+            .set('Authorization', `Bearer ${token}`)
+            .send(requestData);
 
         expect(response.status).toBe(404);
         expect(response.body).toHaveProperty('type');
@@ -83,7 +120,10 @@ describe('Rent a book', () => {
             cpf: 'sem cpf',
             uuid: '908cd771-f8fe-41d0-ad43-79b27accbccf'
         }
-        const response = await request(app).post('/api/biblioteca/alugarlivro').send(requestData);
+        const response = await request(app)
+            .post('/api/biblioteca/alugarlivro')
+            .set('Authorization', `Bearer ${token}`)
+            .send(requestData);
 
         expect(response.status).toBe(404);
         expect(response.body).toHaveProperty('type');
@@ -94,11 +134,25 @@ describe('Rent a book', () => {
 });
 
 describe('Return a book', () => {
+    let token = '';
+    
+    beforeAll(async () => {
+        const response = await request(app)
+            .post(`/api/auth/login`)
+            .auth('usuario', 'senha123')
+            .send();
+
+        token = response.body.token;
+    });
+
     it('should be able to return a book', async () => {
         const requestData = {
             uuid: '4c2923a9-ab32-40bf-86ad-ce095a33e135'
         }
-        const response = await request(app).post('/api/biblioteca/devolverlivro').send(requestData);
+        const response = await request(app)
+            .post('/api/biblioteca/devolverlivro')
+            .set('Authorization', `Bearer ${token}`)
+            .send(requestData);
 
         expect(response.status).toBe(200);
         expect(response.body._status).toBe('OK');
@@ -108,7 +162,10 @@ describe('Return a book', () => {
         const requestData = {
             uuid: '908cd771-f8fe-41d0-ad43-79b27accbccf'
         }
-        const response = await request(app).post('/api/biblioteca/devolverlivro').send(requestData);
+        const response = await request(app)
+            .post('/api/biblioteca/devolverlivro')
+            .set('Authorization', `Bearer ${token}`)
+            .send(requestData);
 
         expect(response.status).toBe(500);
         expect(response.body).toHaveProperty('type');
@@ -121,7 +178,10 @@ describe('Return a book', () => {
         const requestData = {
             uuid: 'sem id'
         }
-        const response = await request(app).post('/api/biblioteca/devolverlivro').send(requestData);
+        const response = await request(app)
+            .post('/api/biblioteca/devolverlivro')
+            .set('Authorization', `Bearer ${token}`)
+            .send(requestData);
 
         expect(response.status).toBe(404);
         expect(response.body).toHaveProperty('type');
