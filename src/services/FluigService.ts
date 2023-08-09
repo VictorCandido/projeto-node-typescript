@@ -9,7 +9,7 @@ export default class FluigService {
             const url = `${process.env.SERVER_URL}/process-management/api/v2/processes/${process.env.PROCESS_ID}/start`;
             const data = JSON.stringify({ "targetAssignee": "victor.candido" });
             
-            return 1;
+            // return 1;
 
             const axiosService = new AxiosService();
 
