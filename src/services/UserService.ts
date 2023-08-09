@@ -1,16 +1,16 @@
+import { PrismaClient } from "@prisma/client";
 import ResponseErrorModel, { ErrorTypesEnum } from "../models/ResponseErrorModel";
-import UserModel from "../models/UserModel";
 
-class UserService {
-    private users: Array<UserModel> = [
-        new UserModel('Pessoa 1', '609.037.520-93'),
-        new UserModel('Pessoa 2', '334.392.050-96'),
-        new UserModel('Pessoa 3', '075.463.320-95')
-    ]
-    
-    find(cpf: string) {
+class UserService {  
+    async find(cpf: string) {
         try {
-            const filteredUser = this.users.find((user: UserModel) => user.cpf == cpf);
+            const prisma = new PrismaClient();
+
+            const filteredUser = await prisma.user.findFirst({
+                where: { cpf }
+            });
+
+            prisma.$disconnect();
 
             if (!filteredUser) {
                 throw new ResponseErrorModel(ErrorTypesEnum.NOT_FOUND, 'Usuário não encontrado.', 404);

@@ -3,14 +3,11 @@ import cors from 'cors';
 import routes from './routes';
 import AuthService from './auth/AuthService';
 
-const HOST = '0.0.0.0';
 const PORT = 3000;
-
 
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 app.use(cors());
 
@@ -38,6 +35,6 @@ app.use((error: any, req: Request, res: Response, next: NextFunction) => {
 
 });
 
-app.listen(PORT, HOST, () => console.log(`Server running on port ${PORT}`));
+// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 export default app;

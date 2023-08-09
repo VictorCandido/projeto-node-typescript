@@ -9,12 +9,11 @@ export default class FluigService {
             const url = `${process.env.SERVER_URL}/process-management/api/v2/processes/${process.env.PROCESS_ID}/start`;
             const data = JSON.stringify({ "targetAssignee": "victor.candido" });
             
+            return 1;
+
             const axiosService = new AxiosService();
 
             const response = await axiosService.sendFluigRequest(url, data);
-
-            console.log('#### RESPONSE STATUS', response.status);
-            console.log('#### RESPONSE DATA', response.data);
 
             if (response.status === 200) {
                 const { processInstanceId } = response.data;

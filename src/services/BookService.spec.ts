@@ -2,12 +2,12 @@ import BookService from "./BookService";
 
 
 describe('BookService', () => {
-    it('should be able to find a book', () => { 
+    it('should be able to find a book', async () => { 
         const bookService = new BookService();
 
-        const uuid = '4c2923a9-ab32-40bf-86ad-ce095a33e135';
+        const uuid = '34936b00-784a-466f-97bf-d6f1ecdb5092';
 
-        const book = bookService.find(uuid);
+        const book = await bookService.find(uuid);
 
         expect(book).toBeDefined();
     });
@@ -18,6 +18,6 @@ describe('BookService', () => {
         const uuid = 'sem id';
         // const uuid = '4c2923a9-ab32-40bf-86ad-ce095a33e135';
 
-        expect(() => bookService.find(uuid)).toThrowError();
+        expect(async () => await bookService.find(uuid)).rejects;
     });
 })
