@@ -3,7 +3,7 @@ import cors from 'cors';
 import routes from './routes';
 import AuthService from './auth/AuthService';
 
-const PORT = 3000;
+const PORT = process.env.PORT ?? 3000;
 
 const app = express();
 
@@ -35,6 +35,6 @@ app.use((error: any, req: Request, res: Response, next: NextFunction) => {
 
 });
 
-// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 export default app;
