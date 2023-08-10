@@ -32,7 +32,7 @@ export default class AuthService {
             const secret = String(process.env.JWT_SECRET);
             
             const options: SignOptions = {
-                expiresIn: '10s',
+                expiresIn: '30s',
                 subject: username + password
             };
             
